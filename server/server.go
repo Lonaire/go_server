@@ -57,13 +57,19 @@ func writeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		defer db.Close()
 
+		fmt.Fprintf(w, "<html><body><div>")
+
 		_, err = db.Exec("INSERT INTO `pets`(`id`, `family`, `sex`, `name`, `age`, `breed`, `check-in`, `check-out`, `id_room`, `id_owner`, `id_health-report`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 			id, family, sex, name, age, breed, checkIn, checkOut, idRoom, idOwner, idHealthReport)
 		if err != nil {
-			panic(err)
+			fmt.Fprintf(w, "<br>"+err.Error()+"</br>")
+		} else {
+			fmt.Fprintf(w, "<br>Data added successfully.</br>")
 		}
 
-		fmt.Fprintf(w, "Data added successfully.")
+		fmt.Fprintf(w, "</div><form method='GET' action='/'>"+
+			"<input type='submit' value='back'/>"+
+			"</form></body></html>")
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
@@ -97,12 +103,19 @@ func readHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			pets = append(pets, p)
 		}
+
+		fmt.Fprintf(w, "<html><body><div>")
+
 		for _, p := range pets {
-			fmt.Fprintf(w, "id: %d, family: %s, sex: %s, name: %s, age: %d, breed: %s, checkIn: %s, checkOut: %s, idRoom: %d, idOwner: %d, idHealthReport: %d\n",
+			fmt.Fprintf(w, "<br>id: %d, family: %s, sex: %s, name: %s, age: %d, breed: %s, checkIn: %s, checkOut: %s, idRoom: %d, idOwner: %d, idHealthReport: %d</br>",
 				p.id, p.family, p.sex, p.name, p.age, p.breed, p.checkIn, p.checkOut, p.idRoom, p.idOwner, p.idHealthReport)
 		}
 
-		fmt.Fprintf(w, "\nData readed successfully.")
+		fmt.Fprintf(w, "<br>Data readed successfully.</br>")
+
+		fmt.Fprintf(w, "</div><form method='GET' action='/'>"+
+			"<input type='submit' value='back'/>"+
+			"</form></body></html>")
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
